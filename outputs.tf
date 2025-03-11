@@ -13,13 +13,12 @@ output "eks_certificate_authority" {
   value       = module.eks.cluster_certificate_authority_data
 }
 
-output "subnet_ids" {
-  description = "List of subnet IDs"
-  value       = module.eks.subnet_ids
-}
-
 output "vpc_id" {
   description = "VPC ID"
-  value       = module.eks.vpc_id
+  value       = data.terraform_remote_state.aws_dev_vpc.outputs.vpc_id
 }
 
+output "subnet_ids" {
+  description = "Subnets used by the EKS cluster"
+  value       = data.terraform_remote_state.aws_dev_vpc.outputs.subnet_ids
+}
