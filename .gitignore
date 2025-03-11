@@ -1,0 +1,12 @@
+*.tfstate
+*.tfstate.backup
+terraform.tfstate.d/
+.terraform/
+.terraform.lock.hcl
+*.auto.tfvars
+terraform.tfvars
+*.log
+*.bak
+.DS_Store
+*.swp
+*.swo
