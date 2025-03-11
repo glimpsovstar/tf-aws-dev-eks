@@ -4,14 +4,20 @@ variable "aws_region" {
   default     = "ap-southeast-2"
 }
 
-variable "cluster_name" {
+variable "eks_cluster_name" {
   description = "EKS cluster name"
   type        = string
-  default     = "vault-cluster"
+  default     = "vault-demo-cluster"
 }
 
 variable "instance_type" {
   description = "Instance type for EKS nodes"
   type        = string
   default     = "t3.medium"
+}
+
+variable "eks_cluster_version" {
+  description = "The Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.32"
 }
