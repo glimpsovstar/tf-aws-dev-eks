@@ -21,3 +21,9 @@ variable "eks_cluster_version" {
   type        = string
   default     = "1.32"
 }
+
+variable "vault_domain_name" {
+  description = "The domain name for the Vault service"
+  type        = string
+  default     = "vault-poc.withdevo.dev"
+}
