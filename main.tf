@@ -1,16 +1,3 @@
-terraform {
-  cloud {
-    organization = "djoo-hashicorp"
-    workspaces {
-      name = "tf-aws-eks"
-    }
-  }
-}
-
-provider "aws" {
-  region = var.aws_region
-}
-
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = var.cluster_name
