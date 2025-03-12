@@ -22,3 +22,8 @@ output "subnet_ids" {
   description = "Subnets used by the EKS cluster"
   value       = data.terraform_remote_state.aws_dev_vpc.outputs.subnet_ids
 }
+
+output "eks_iam_role_name" {
+  description = "The IAM role used by EKS cluster"
+  value       = module.eks.cluster_iam_role_name
+}
