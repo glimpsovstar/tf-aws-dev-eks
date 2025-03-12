@@ -39,3 +39,10 @@ module "eks" {
   }
 }
 
+  aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::521614675974:role/aws_david.joo_test-developer"
+      username = "djoo"
+      groups   = ["system:masters"]
+    },
+  ]
