@@ -3,6 +3,7 @@ module "eks" {
   version         = "20.34.0"
   cluster_name    = var.eks_cluster_name
   cluster_version = var.eks_cluster_version
+  enable_cluster_creator_admin_permissions = true
 
   vpc_id     = data.terraform_remote_state.aws_dev_vpc.outputs.vpc_id
   subnet_ids = data.terraform_remote_state.aws_dev_vpc.outputs.subnet_ids
