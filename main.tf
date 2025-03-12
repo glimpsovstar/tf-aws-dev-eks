@@ -40,19 +40,3 @@ module "eks" {
   }
 }
 
-resource "kubernetes_config_map_v1" "aws_auth" {
-  metadata {
-    name      = "aws-auth"
-    namespace = "kube-system"
-  }
-
-  data = {
-    mapRoles = <<YAML
-- rolearn: arn:aws:iam::521614675974:role/aws_david.joo_test-developer
-  username: djoo
-  groups:
-    - system:masters
-YAML
-  }
-}
-
