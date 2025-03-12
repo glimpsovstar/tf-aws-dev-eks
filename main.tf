@@ -38,16 +38,20 @@ module "eks" {
     vpc-cni    = { most_recent = true }
   }
 }
-  module "eks_auth" {
-    source = "terraform-aws-modules/eks/aws//modules/aws-auth"
 
-    cluster_name = module.eks.cluster_name
+resource "kubernetes_config_map_v1" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
 
-    map_roles = [
-      {
-        rolearn  = "arn:aws:iam::521614675974:role/aws_david.joo_test-developer"
-        username = "djoo"
-        groups   = ["system:masters"]
-      }
-    ]
+  data = {
+    mapRoles = <<YAML
+- rolearn: arn:aws:iam::521614675974:role/aws_david.joo_test-developer
+  username: djoo
+  groups:
+    - system:masters
+YAML
+  }
 }
+
