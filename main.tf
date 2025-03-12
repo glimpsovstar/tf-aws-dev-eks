@@ -38,11 +38,16 @@ module "eks" {
     vpc-cni    = { most_recent = true }
   }
 }
+  module "eks_auth" {
+    source = "terraform-aws-modules/eks/aws//modules/aws-auth"
 
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::521614675974:role/aws_david.joo_test-developer"
-      username = "djoo"
-      groups   = ["system:masters"]
-    },
-  ]
+    cluster_name = module.eks.cluster_name
+
+    map_roles = [
+      {
+        rolearn  = "arn:aws:iam::521614675974:role/aws_david.joo_test-developer"
+        username = "djoo"
+        groups   = ["system:masters"]
+      }
+    ]
+}
