@@ -65,7 +65,7 @@ resource "aws_acm_certificate" "vault_cert" {
 resource "aws_iam_policy" "eks_load_balancer_controller" {
   name        = "eks-load-balancer-controller-policy"
   description = "Allows EKS to manage ALB and NLB"
-  policy      = file("load-balancer-policy.json")
+  policy      = file(${path.module}/"load-balancer-policy.json")
 }
 
 resource "aws_iam_role_policy_attachment" "eks_load_balancer_attach" {
