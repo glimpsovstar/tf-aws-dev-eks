@@ -9,6 +9,20 @@ module "eks" {
 
   enable_irsa = true
 
+  cluster_endpoint_public_access  = true  # Enable Public Access
+  cluster_endpoint_private_access = true  # Keep Private Access Enabled
+
+  cluster_security_group_additional_rules = {
+    inbound_allow_eks_api = {
+      description = "Allow public access to EKS API"
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "ingress"
+      cidr_blocks = ["0.0.0.0/0"]  # Open to all. Restrict this in production.
+    }
+  }
+
   eks_managed_node_groups = {
     default = {
       desired_size   = 2
