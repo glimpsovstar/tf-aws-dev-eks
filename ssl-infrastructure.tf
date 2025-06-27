@@ -29,7 +29,7 @@ resource "helm_release" "nginx_ingress" {
   }
 }
 
-# Install cert-manager for SSL certificates
+# Install cert-manager with CRDs - FIXED VERSION
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   namespace        = "cert-manager"
@@ -40,6 +40,7 @@ resource "helm_release" "cert_manager" {
   version    = "v1.13.2"
   timeout    = 600
 
+  # CRITICAL: This installs the CRDs
   set {
     name  = "installCRDs"
     value = "true"
@@ -49,12 +50,16 @@ resource "helm_release" "cert_manager" {
     name  = "extraArgs[0]"
     value = "--enable-certificate-owner-ref=true"
   }
+
+  # Wait for CRDs to be ready before proceeding
+  wait          = true
+  wait_for_jobs = true
 }
 
-# Wait for cert-manager to be ready
+# Increase wait time for cert-manager to be fully ready
 resource "time_sleep" "wait_for_cert_manager" {
   depends_on = [helm_release.cert_manager]
-  create_duration = "60s"
+  create_duration = "90s"  # Increased from 60s
 }
 
 # Create Let's Encrypt ClusterIssuer for production
