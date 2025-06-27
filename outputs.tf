@@ -20,7 +20,7 @@ output "vpc_id" {
 
 output "subnet_ids" {
   description = "Subnets used by the EKS cluster"
-  value       = data.terraform_remote_state.aws_dev_vpc.outputs.subnet_ids
+  value       = data.terraform_remote_state.aws_dev_vpc.outputs.vpc_private_subnets
 }
 
 output "eks_iam_role_name" {

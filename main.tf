@@ -6,7 +6,7 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
 
   vpc_id     = data.terraform_remote_state.aws_dev_vpc.outputs.vpc_id
-  subnet_ids = data.terraform_remote_state.aws_dev_vpc.outputs.subnet_ids
+  subnet_ids = data.terraform_remote_state.aws_dev_vpc.outputs.vpc_private_subnets
 
   enable_irsa = true
 
