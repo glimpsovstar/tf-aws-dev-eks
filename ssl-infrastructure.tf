@@ -35,6 +35,7 @@ resource "helm_release" "cert_manager_crds" {
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
   version          = "v1.13.2"
+  create_namespace = true
 
   set {
     name  = "installCRDs"
@@ -94,7 +95,6 @@ resource "helm_release" "cert_manager" {
     value = "nginx"
   }
 
-  # ✅ ✅ ✅ Embed staging ClusterIssuer
   set {
     name  = "extraObjects[1].apiVersion"
     value = "cert-manager.io/v1"
