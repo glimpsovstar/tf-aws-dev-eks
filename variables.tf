@@ -19,13 +19,13 @@ variable "instance_type" {
 variable "eks_cluster_version" {
   description = "The Kubernetes version for the EKS cluster"
   type        = string
-  default     = "1.32"
+  default     = "1.33"
 }
 
 variable "vault_domain_name" {
   description = "The domain name for the Vault service"
   type        = string
-  default     = "vault-poc.withdevo.dev"
+  default     = ""
 }
 
 
@@ -33,13 +33,13 @@ variable "vault_domain_name" {
 variable "route53_zone_name" {
   description = "The main Route53 hosted zone name"
   type        = string
-  default     = "david-joo.sbx.hashidemos.io"
+  default     = ""
 }
 
 variable "eks_subdomain_zone" {
   description = "The EKS subdomain zone name"
   type        = string
-  default     = "eks.david-joo.sbx.hashidemos.io"
+  default     = ""
 }
 
 variable "create_eks_subdomain_zone" {
