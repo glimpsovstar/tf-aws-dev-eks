@@ -29,6 +29,19 @@ resource "helm_release" "nginx_ingress" {
   }
 }
 
+resource "helm_release" "cert_manager_crds" {
+  name             = "cert-manager-crds"
+  namespace        = "cert-manager"
+  repository       = "https://charts.jetstack.io"
+  chart            = "cert-manager"
+  version          = "v1.13.2"
+
+  set {
+    name  = "installCRDs"
+    value = "true"
+  }
+}
+
 # Install cert-manager with CRDs - FIXED VERSION
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
@@ -40,10 +53,12 @@ resource "helm_release" "cert_manager" {
   version    = "v1.13.2"
   timeout    = 600
 
+  depends_on = [helm_release.cert_manager_crds]
+
   # CRITICAL: This installs the CRDs
   set {
     name  = "installCRDs"
-    value = "true"
+    value = "false"  # Set to false to avoid re-installing CRDs
   }
 
   set {
