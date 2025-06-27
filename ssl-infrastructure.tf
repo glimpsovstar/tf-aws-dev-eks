@@ -65,81 +65,66 @@ resource "helm_release" "cert_manager" {
     name  = "extraArgs[0]"
     value = "--enable-certificate-owner-ref=true"
   }
+  set {
+    name  = "extraObjects[0].apiVersion"
+    value = "cert-manager.io/v1"
+  }
+  set {
+    name  = "extraObjects[0].kind"
+    value = "ClusterIssuer"
+  }
+  set {
+    name  = "extraObjects[0].metadata.name"
+    value = "letsencrypt-prod"
+  }
+  set {
+    name  = "extraObjects[0].spec.acme.email"
+    value = var.letsencrypt_email
+  }
+  set {
+    name  = "extraObjects[0].spec.acme.server"
+    value = "https://acme-v02.api.letsencrypt.org/directory"
+  }
+  set {
+    name  = "extraObjects[0].spec.acme.privateKeySecretRef.name"
+    value = "letsencrypt-prod"
+  }
+  set {
+    name  = "extraObjects[0].spec.acme.solvers[0].http01.ingress.class"
+    value = "nginx"
+  }
+
+  # ✅ ✅ ✅ Embed staging ClusterIssuer
+  set {
+    name  = "extraObjects[1].apiVersion"
+    value = "cert-manager.io/v1"
+  }
+  set {
+    name  = "extraObjects[1].kind"
+    value = "ClusterIssuer"
+  }
+  set {
+    name  = "extraObjects[1].metadata.name"
+    value = "letsencrypt-staging"
+  }
+  set {
+    name  = "extraObjects[1].spec.acme.email"
+    value = var.letsencrypt_email
+  }
+  set {
+    name  = "extraObjects[1].spec.acme.server"
+    value = "https://acme-v02.api.letsencrypt.org/directory/staging"
+  }
+  set {
+    name  = "extraObjects[1].spec.acme.privateKeySecretRef.name"
+    value = "letsencrypt-staging"
+  }
+  set {
+    name  = "extraObjects[1].spec.acme.solvers[0].http01.ingress.class"
+    value = "nginx"
+  }
 
   # Wait for CRDs to be ready before proceeding
   wait          = true
   wait_for_jobs = true
-}
-
-
-# Create Let's Encrypt ClusterIssuer for production
-resource "kubernetes_manifest" "letsencrypt_prod_issuer" {
-   depends_on = [null_resource.wait_for_clusterissuer_crd]
-
-  manifest = {
-    apiVersion = "cert-manager.io/v1"
-    kind       = "ClusterIssuer"
-    metadata = {
-      name = "letsencrypt-prod"
-    }
-    spec = {
-      acme = {
-        email  = var.letsencrypt_email
-        server = "https://acme-v02.api.letsencrypt.org/directory"
-        privateKeySecretRef = {
-          name = "letsencrypt-prod"
-        }
-        solvers = [{
-          http01 = {
-            ingress = {
-              class = "nginx"
-            }
-          }
-        }]
-      }
-    }
-  }
-}
-
-# Create Let's Encrypt ClusterIssuer for staging (testing)
-resource "kubernetes_manifest" "letsencrypt_staging_issuer" {
-   depends_on = [null_resource.wait_for_clusterissuer_crd]
-
-  manifest = {
-    apiVersion = "cert-manager.io/v1"
-    kind       = "ClusterIssuer"
-    metadata = {
-      name = "letsencrypt-staging"
-    }
-    spec = {
-      acme = {
-        email  = var.letsencrypt_email
-        server = "https://acme-v02.api.letsencrypt.org/directory/staging"
-        privateKeySecretRef = {
-          name = "letsencrypt-staging"
-        }
-        solvers = [{
-          http01 = {
-            ingress = {
-              class = "nginx"
-            }
-          }
-        }]
-      }
-    }
-  }
-}
-
-resource "null_resource" "wait_for_clusterissuer_crd" {
-  depends_on = [helm_release.cert_manager]
-
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "Waiting for ClusterIssuer CRD to exist..."
-      until kubectl get crd clusterissuers.cert-manager.io; do
-        echo "Still waiting for ClusterIssuer CRD..."
-        sleep 5
-      done
-    EOT
-  }
 }
