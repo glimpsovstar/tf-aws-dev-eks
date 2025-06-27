@@ -71,15 +71,10 @@ resource "helm_release" "cert_manager" {
   wait_for_jobs = true
 }
 
-# Increase wait time for cert-manager to be fully ready
-resource "time_sleep" "wait_for_cert_manager" {
-  depends_on = [helm_release.cert_manager]
-  create_duration = "90s"  # Increased from 60s
-}
 
 # Create Let's Encrypt ClusterIssuer for production
 resource "kubernetes_manifest" "letsencrypt_prod_issuer" {
-  depends_on = [time_sleep.wait_for_cert_manager]
+   depends_on = [null_resource.wait_for_clusterissuer_crd]
 
   manifest = {
     apiVersion = "cert-manager.io/v1"
@@ -108,7 +103,7 @@ resource "kubernetes_manifest" "letsencrypt_prod_issuer" {
 
 # Create Let's Encrypt ClusterIssuer for staging (testing)
 resource "kubernetes_manifest" "letsencrypt_staging_issuer" {
-  depends_on = [time_sleep.wait_for_cert_manager]
+   depends_on = [null_resource.wait_for_clusterissuer_crd]
 
   manifest = {
     apiVersion = "cert-manager.io/v1"
@@ -132,5 +127,19 @@ resource "kubernetes_manifest" "letsencrypt_staging_issuer" {
         }]
       }
     }
+  }
+}
+
+resource "null_resource" "wait_for_clusterissuer_crd" {
+  depends_on = [helm_release.cert_manager]
+
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "Waiting for ClusterIssuer CRD to exist..."
+      until kubectl get crd clusterissuers.cert-manager.io; do
+        echo "Still waiting for ClusterIssuer CRD..."
+        sleep 5
+      done
+    EOT
   }
 }
