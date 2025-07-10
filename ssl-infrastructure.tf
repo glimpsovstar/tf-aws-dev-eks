@@ -1,5 +1,6 @@
 # Install NGINX Ingress Controller
 resource "helm_release" "nginx_ingress" {
+  count            = var.install_nginx_ingress ? 1 : 0
   name             = "nginx-ingress"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
@@ -30,6 +31,7 @@ resource "helm_release" "nginx_ingress" {
 }
 
 resource "helm_release" "cert_manager_crds" {
+  count            = var.install_cert_manager ? 1 : 0
   name             = "cert-manager-crds"
   namespace        = "cert-manager"
   repository       = "https://charts.jetstack.io"
@@ -45,6 +47,7 @@ resource "helm_release" "cert_manager_crds" {
 
 # Install cert-manager with CRDs - FIXED VERSION
 resource "helm_release" "cert_manager" {
+  count            = var.install_cert_manager ? 1 : 0
   name             = "cert-manager"
   namespace        = "cert-manager"
   create_namespace = true

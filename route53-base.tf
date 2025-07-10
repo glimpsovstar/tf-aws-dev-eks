@@ -3,8 +3,11 @@
 
 # Data source for the main Route53 hosted zone
 data "aws_route53_zone" "main" {
+  count        = var.route53_zone_name != "" ? 1 : 0
   name         = var.route53_zone_name
   private_zone = false
+
+  depends_on = [ module.eks ]
 }
 
 # Optional: Create EKS subdomain zone (if you want delegation)
@@ -21,8 +24,8 @@ resource "aws_route53_zone" "eks_subdomain" {
 
 # Create NS record in main zone pointing to subdomain zone (if creating subdomain zone)
 resource "aws_route53_record" "eks_subdomain_ns" {
-  count   = var.create_eks_subdomain_zone ? 1 : 0
-  zone_id = data.aws_route53_zone.main.zone_id
+  count   = var.create_eks_subdomain_zone && var.route53_zone_name != "" ? 1 : 0
+  zone_id = data.aws_route53_zone.main[0].zone_id
   name    = var.eks_subdomain_zone
   type    = "NS"
   ttl     = 300

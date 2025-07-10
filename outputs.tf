@@ -32,17 +32,17 @@ output "eks_iam_role_name" {
 # Route53 outputs for consumption by application layers
 output "route53_zone_id" {
   description = "Route53 main zone ID"
-  value       = data.aws_route53_zone.main.zone_id
+  value       = var.route53_zone_name != "" ? data.aws_route53_zone.main[0].zone_id : null
 }
 
 output "route53_zone_name" {
   description = "Route53 main zone name"
-  value       = data.aws_route53_zone.main.name
+  value       = var.route53_zone_name != "" ? data.aws_route53_zone.main[0].name : null
 }
 
 output "eks_subdomain_zone_id" {
   description = "EKS subdomain zone ID (if created)"
-  value       = var.create_eks_subdomain_zone ? aws_route53_zone.eks_subdomain[0].zone_id : data.aws_route53_zone.main.zone_id
+  value       = var.create_eks_subdomain_zone ? aws_route53_zone.eks_subdomain[0].zone_id : (var.route53_zone_name != "" ? data.aws_route53_zone.main[0].zone_id : null)
 }
 
 output "eks_subdomain_zone_name" {
