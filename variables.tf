@@ -41,6 +41,25 @@ variable "create_eks_subdomain_zone" {
   default     = false
 }
 
+# DNS Configuration (static only - no LoadBalancer dependencies)
+variable "static_dns_records" {
+  description = "Static DNS records that don't depend on LoadBalancer"
+  type = map(object({
+    type    = string
+    ttl     = number
+    records = list(string)
+  }))
+  default = {}
+  # Example:
+  # static_dns_records = {
+  #   "mail.yourdomain.com" = {
+  #     type    = "MX"
+  #     ttl     = 300
+  #     records = ["10 mail.provider.com"]
+  #   }
+  # }
+}
+
 variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
