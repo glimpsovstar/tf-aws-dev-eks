@@ -27,9 +27,15 @@ module "eks" {
   eks_managed_node_groups = {
     default = {
       desired_size   = 2
-      max_size       = 3
+      max_size       = 4
       min_size       = 2
       instance_types = [var.instance_type]
+
+    # Add more capacity for system workloads
+    capacity_type = "ON_DEMAND"
+    
+    # Ensure nodes can handle the workload
+    taints = []
     }
   }
 

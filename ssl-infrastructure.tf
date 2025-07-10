@@ -7,7 +7,7 @@ resource "helm_release" "nginx_ingress" {
   version          = "4.8.3"
   namespace        = "ingress-nginx"
   create_namespace = true
-  timeout          = 600
+  timeout          = 900
 
   provider = helm.eks
 
@@ -30,6 +30,34 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-cross-zone-load-balancing-enabled"
     value = "true"
   }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-healthcheck-protocol"
+    value = "HTTP"
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-healthcheck-port"
+    value = "10254"
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-healthcheck-path"
+    value = "/healthz"
+  }
+
+  # Reduce resource requirements for faster startup
+  set {
+    name  = "controller.resources.requests.cpu"
+    value = "100m"
+  }
+
+  set {
+    name  = "controller.resources.requests.memory"
+    value = "90Mi"
+  }
+
+  depends_on = [module.eks]
 }
 
 resource "helm_release" "cert_manager_crds" {
@@ -47,93 +75,35 @@ resource "helm_release" "cert_manager_crds" {
     name  = "installCRDs"
     value = "true"
   }
+
+  set {
+    name  = "webhook.enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "cainjector.enabled"
+    value = "false"
+  }
+
+  depends_on = [time_sleep.wait_for_load_balancer]
 }
 
-# Install cert-manager with CRDs - FIXED VERSION
+
 resource "helm_release" "cert_manager" {
   count            = var.install_cert_manager ? 1 : 0
   name             = "cert-manager"
   namespace        = "cert-manager"
-  create_namespace = true
+  repository       = "https://charts.jetstack.io"
+  chart            = "cert-manager"
+  version          = "v1.13.2"
+  timeout          = 600
+  wait             = true
 
-  repository = "https://charts.jetstack.io"
-  chart      = "cert-manager"
-  version    = "v1.13.2"
-  timeout    = 600
-
-  provider = helm.eks
-
-  depends_on = [helm_release.cert_manager_crds, module.eks]
-
-  # CRITICAL: This installs the CRDs
   set {
     name  = "installCRDs"
-    value = "false"  # Set to false to avoid re-installing CRDs
+    value = "false"  # Already installed above
   }
 
-  set {
-    name  = "extraArgs[0]"
-    value = "--enable-certificate-owner-ref=true"
-  }
-  set {
-    name  = "extraObjects[0].apiVersion"
-    value = "cert-manager.io/v1"
-  }
-  set {
-    name  = "extraObjects[0].kind"
-    value = "ClusterIssuer"
-  }
-  set {
-    name  = "extraObjects[0].metadata.name"
-    value = "letsencrypt-prod"
-  }
-  set {
-    name  = "extraObjects[0].spec.acme.email"
-    value = var.letsencrypt_email
-  }
-  set {
-    name  = "extraObjects[0].spec.acme.server"
-    value = "https://acme-v02.api.letsencrypt.org/directory"
-  }
-  set {
-    name  = "extraObjects[0].spec.acme.privateKeySecretRef.name"
-    value = "letsencrypt-prod"
-  }
-  set {
-    name  = "extraObjects[0].spec.acme.solvers[0].http01.ingress.class"
-    value = "nginx"
-  }
-
-  set {
-    name  = "extraObjects[1].apiVersion"
-    value = "cert-manager.io/v1"
-  }
-  set {
-    name  = "extraObjects[1].kind"
-    value = "ClusterIssuer"
-  }
-  set {
-    name  = "extraObjects[1].metadata.name"
-    value = "letsencrypt-staging"
-  }
-  set {
-    name  = "extraObjects[1].spec.acme.email"
-    value = var.letsencrypt_email
-  }
-  set {
-    name  = "extraObjects[1].spec.acme.server"
-    value = "https://acme-v02.api.letsencrypt.org/directory/staging"
-  }
-  set {
-    name  = "extraObjects[1].spec.acme.privateKeySecretRef.name"
-    value = "letsencrypt-staging"
-  }
-  set {
-    name  = "extraObjects[1].spec.acme.solvers[0].http01.ingress.class"
-    value = "nginx"
-  }
-
-  # Wait for CRDs to be ready before proceeding
-  wait          = true
-  wait_for_jobs = true
+  depends_on = [helm_release.cert_manager_crds]
 }
