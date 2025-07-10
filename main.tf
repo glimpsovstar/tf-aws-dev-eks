@@ -10,8 +10,8 @@ module "eks" {
 
   enable_irsa = true
 
-  cluster_endpoint_public_access  = true  # Enable Public Access
-  cluster_endpoint_private_access = true  # Keep Private Access Enabled
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = true
 
   cluster_security_group_additional_rules = {
     inbound_allow_eks_api = {
@@ -20,7 +20,7 @@ module "eks" {
       from_port   = 443
       to_port     = 443
       type        = "ingress"
-      cidr_blocks = ["0.0.0.0/0"]  # Open to all. Restrict this in production.
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
@@ -30,12 +30,9 @@ module "eks" {
       max_size       = 4
       min_size       = 2
       instance_types = [var.instance_type]
-
-    # Add more capacity for system workloads
-    capacity_type = "ON_DEMAND"
-    
-    # Ensure nodes can handle the workload
-    taints = []
+      
+      # Ensure nodes can handle addon workloads
+      capacity_type = "ON_DEMAND"
     }
   }
 
@@ -45,4 +42,3 @@ module "eks" {
     vpc-cni    = { most_recent = true }
   }
 }
-

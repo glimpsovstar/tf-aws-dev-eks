@@ -1,13 +1,8 @@
-# Add this to your EKS foundation repository
-# File: route53-base.tf
-
 # Data source for the main Route53 hosted zone
 data "aws_route53_zone" "main" {
   count        = var.route53_zone_name != "" ? 1 : 0
   name         = var.route53_zone_name
   private_zone = false
-
-  depends_on = [ module.eks ]
 }
 
 # Optional: Create EKS subdomain zone (if you want delegation)

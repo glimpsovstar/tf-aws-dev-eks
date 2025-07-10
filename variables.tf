@@ -22,13 +22,6 @@ variable "eks_cluster_version" {
   default     = "1.33"
 }
 
-variable "vault_domain_name" {
-  description = "The domain name for the Vault service"
-  type        = string
-  default     = ""
-}
-
-
 # Route53 Configuration
 variable "route53_zone_name" {
   description = "The main Route53 hosted zone name"
@@ -52,23 +45,4 @@ variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
   default     = "dev"
-}
-
-# SSL Configuration
-variable "letsencrypt_email" {
-  description = "Email address for Let's Encrypt notifications"
-  type        = string
-  default     = ""
-}
-
-variable "install_nginx_ingress" {
-  description = "Whether to install NGINX ingress controller"
-  type        = bool
-  default     = true
-}
-
-variable "install_cert_manager" {
-  description = "Whether to install cert-manager for SSL"
-  type        = bool
-  default     = true
 }

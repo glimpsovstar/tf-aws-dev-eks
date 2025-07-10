@@ -8,4 +8,3 @@ data "terraform_remote_state" "aws_dev_vpc" {
     }
   }
 }
-
