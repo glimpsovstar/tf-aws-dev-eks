@@ -80,6 +80,8 @@ output "letsencrypt_cluster_issuer_staging" {
 data "kubernetes_service" "nginx_ingress_controller" {
   count = var.install_nginx_ingress ? 1 : 0
 
+  provider = kubernetes.eks
+
   metadata {
     name      = "nginx-ingress-ingress-nginx-controller"
     namespace = "ingress-nginx"

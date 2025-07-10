@@ -9,6 +9,8 @@ resource "helm_release" "nginx_ingress" {
   create_namespace = true
   timeout          = 600
 
+  provider = helm.eks
+
   set {
     name  = "controller.service.type"
     value = "LoadBalancer"
@@ -39,6 +41,8 @@ resource "helm_release" "cert_manager_crds" {
   version          = "v1.13.2"
   create_namespace = true
 
+  provider = helm.eks
+
   set {
     name  = "installCRDs"
     value = "true"
@@ -57,7 +61,9 @@ resource "helm_release" "cert_manager" {
   version    = "v1.13.2"
   timeout    = 600
 
-  depends_on = [helm_release.cert_manager_crds]
+  provider = helm.eks
+
+  depends_on = [helm_release.cert_manager_crds, module.eks]
 
   # CRITICAL: This installs the CRDs
   set {
