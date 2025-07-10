@@ -1,7 +1,6 @@
 # Create namespace first
 resource "kubernetes_namespace" "ingress_nginx" {
-  count    = var.install_nginx_ingress ? 1 : 0
-  provider = kubernetes.eks
+  count = var.install_nginx_ingress ? 1 : 0
   
   metadata {
     name = "ingress-nginx"
@@ -24,7 +23,6 @@ resource "time_sleep" "wait_for_namespace" {
 # Install NGINX Ingress Controller
 resource "helm_release" "nginx_ingress" {
   count            = var.install_nginx_ingress ? 1 : 0
-  provider         = helm.eks
   name             = "nginx-ingress"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
@@ -94,8 +92,7 @@ resource "time_sleep" "wait_for_load_balancer" {
 
 # Create cert-manager namespace
 resource "kubernetes_namespace" "cert_manager" {
-  count    = var.install_cert_manager ? 1 : 0
-  provider = kubernetes.eks
+  count = var.install_cert_manager ? 1 : 0
   
   metadata {
     name = "cert-manager"
@@ -118,7 +115,6 @@ resource "time_sleep" "wait_for_cert_manager_namespace" {
 # Install cert-manager CRDs first
 resource "helm_release" "cert_manager_crds" {
   count            = var.install_cert_manager ? 1 : 0
-  provider         = helm.eks
   name             = "cert-manager-crds"
   namespace        = "cert-manager"
   repository       = "https://charts.jetstack.io"
@@ -163,7 +159,6 @@ resource "time_sleep" "wait_for_crds" {
 # Install cert-manager main components
 resource "helm_release" "cert_manager" {
   count            = var.install_cert_manager ? 1 : 0
-  provider         = helm.eks
   name             = "cert-manager"
   namespace        = "cert-manager"
   repository       = "https://charts.jetstack.io"
@@ -196,8 +191,7 @@ resource "time_sleep" "wait_for_cert_manager" {
 
 # Production ClusterIssuer
 resource "kubernetes_manifest" "letsencrypt_prod" {
-  count    = var.install_cert_manager && var.letsencrypt_email != "" ? 1 : 0
-  provider = kubernetes.eks
+  count = var.install_cert_manager && var.letsencrypt_email != "" ? 1 : 0
 
   manifest = {
     apiVersion = "cert-manager.io/v1"
@@ -228,8 +222,7 @@ resource "kubernetes_manifest" "letsencrypt_prod" {
 
 # Staging ClusterIssuer
 resource "kubernetes_manifest" "letsencrypt_staging" {
-  count    = var.install_cert_manager && var.letsencrypt_email != "" ? 1 : 0
-  provider = kubernetes.eks
+  count = var.install_cert_manager && var.letsencrypt_email != "" ? 1 : 0
 
   manifest = {
     apiVersion = "cert-manager.io/v1"
