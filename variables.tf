@@ -19,7 +19,7 @@ variable "instance_type" {
 variable "eks_cluster_version" {
   description = "The Kubernetes version for the EKS cluster"
   type        = string
-  default     = "1.33"
+  default     = "1.30"  # Fixed: Valid Kubernetes version (was 1.33)
 }
 
 # Route53 Configuration

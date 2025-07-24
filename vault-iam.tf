@@ -1,6 +1,6 @@
 # IAM role for Vault service account
 resource "aws_iam_role" "vault" {
-  name = "${var.cluster_name}-vault"
+  name = "${var.eks_cluster_name}-vault"  # Fixed: Use consistent variable name
   
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -22,13 +22,14 @@ resource "aws_iam_role" "vault" {
   })
   
   tags = {
-    Name = "${var.cluster_name}-vault"
+    Name        = "${var.eks_cluster_name}-vault"
+    Environment = var.environment
   }
 }
 
 # IAM policy for Vault KMS access
 resource "aws_iam_policy" "vault_kms" {
-  name        = "${var.cluster_name}-vault-kms"
+  name        = "${var.eks_cluster_name}-vault-kms"  # Fixed: Use consistent variable name
   description = "IAM policy for Vault KMS access"
   
   policy = jsonencode({
@@ -64,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "vault_kms" {
 
 # IAM role for EBS CSI driver
 resource "aws_iam_role" "ebs_csi_driver" {
-  name = "${var.cluster_name}-ebs-csi-driver"
+  name = "${var.eks_cluster_name}-ebs-csi-driver"  # Fixed: Use consistent variable name
   
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -84,6 +85,11 @@ resource "aws_iam_role" "ebs_csi_driver" {
       }
     ]
   })
+  
+  tags = {
+    Name        = "${var.eks_cluster_name}-ebs-csi-driver"
+    Environment = var.environment
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {

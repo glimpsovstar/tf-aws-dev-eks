@@ -1,14 +1,14 @@
 # Security group for Vault
 resource "aws_security_group" "vault" {
-  name_prefix = "${var.cluster_name}-vault-"
-  vpc_id      = module.vpc.vpc_id
+  name_prefix = "${var.eks_cluster_name}-vault-"  # Fixed: Use consistent variable name
+  vpc_id      = data.terraform_remote_state.aws_dev_vpc.outputs.vpc_id  # Fixed: Use remote state VPC reference
   description = "Security group for Vault cluster"
   
   ingress {
     from_port   = 8200
     to_port     = 8200
     protocol    = "tcp"
-    cidr_blocks = [module.vpc.vpc_cidr_block]
+    cidr_blocks = [data.terraform_remote_state.aws_dev_vpc.outputs.vpc_cidr_block]  # Fixed: Use remote state VPC CIDR
     description = "Vault API"
   }
   
@@ -16,7 +16,7 @@ resource "aws_security_group" "vault" {
     from_port   = 8201
     to_port     = 8201
     protocol    = "tcp"
-    cidr_blocks = [module.vpc.vpc_cidr_block]
+    cidr_blocks = [data.terraform_remote_state.aws_dev_vpc.outputs.vpc_cidr_block]  # Fixed: Use remote state VPC CIDR
     description = "Vault cluster communication"
   }
   
@@ -28,6 +28,7 @@ resource "aws_security_group" "vault" {
   }
   
   tags = {
-    Name = "${var.cluster_name}-vault"
+    Name        = "${var.eks_cluster_name}-vault"
+    Environment = var.environment
   }
 }

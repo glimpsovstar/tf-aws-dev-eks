@@ -13,5 +13,5 @@ resource "kubernetes_storage_class" "vault" {
     encrypted = "true"
   }
   
-  depends_on = [module.eks]
+  depends_on = [module.eks]  # Ensure EKS cluster is created first
 }

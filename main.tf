@@ -36,20 +36,19 @@ module "eks" {
     }
   }
 
+  # Fixed: Consolidated EKS addons configuration (removed duplicate)
   cluster_addons = {
+    aws-ebs-csi-driver = {
+      most_recent              = true
+      service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+    }
     coredns    = { most_recent = true }
     kube-proxy = { most_recent = true }
     vpc-cni    = { most_recent = true }
   }
   
-}
-# Add this to your existing EKS module configuration
-eks_addons = {
-  aws-ebs-csi-driver = {
-    most_recent              = true
-    service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+  tags = {
+    Environment = var.environment
+    Terraform   = "true"
   }
-  coredns    = { most_recent = true }
-  vpc-cni    = { most_recent = true }
-  kube-proxy = { most_recent = true }
 }

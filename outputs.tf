@@ -63,3 +63,20 @@ output "eks_subdomain_name_servers" {
   description = "EKS subdomain name servers (if created)"
   value       = var.create_eks_subdomain_zone ? aws_route53_zone.eks_subdomain[0].name_servers : []
 }
+
+# Added: Vault-specific outputs
+output "vault_kms_key_id" {
+  description = "KMS Key ID for Vault auto-unseal"
+  value       = aws_kms_key.vault.key_id
+  sensitive   = true
+}
+
+output "vault_kms_key_arn" {
+  description = "KMS Key ARN for Vault auto-unseal"
+  value       = aws_kms_key.vault.arn
+}
+
+output "vault_iam_role_arn" {
+  description = "IAM Role ARN for Vault service account"
+  value       = aws_iam_role.vault.arn
+}
