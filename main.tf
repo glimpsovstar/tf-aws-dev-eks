@@ -46,6 +46,16 @@ module "eks" {
     kube-proxy = { most_recent = true }
     vpc-cni    = { most_recent = true }
   }
+
+  # Add kubectl access for additional AWS roles/users
+  access_entries = {
+    # Add David Joo's AWS role for kubectl access
+    david_joo_access = {
+      kubernetes_groups = ["system:masters"]
+      principal_arn     = "arn:aws:iam::521614675974:role/aws_david.joo_test-developer"
+      type             = "STANDARD"
+    }
+  }
   
   tags = {
     Environment = var.environment
