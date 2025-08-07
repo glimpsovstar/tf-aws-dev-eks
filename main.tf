@@ -51,9 +51,33 @@ module "eks" {
   access_entries = {
     # Add David Joo's AWS role for kubectl access
     david_joo_access = {
-      kubernetes_groups = ["system:masters"]
+      kubernetes_groups = []
       principal_arn     = "arn:aws:iam::521614675974:role/aws_david.joo_test-developer"
-      type             = "STANDARD"
+      
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+    
+    # Add Terraform Cloud role for kubectl access
+    terraform_cloud_access = {
+      kubernetes_groups = []
+      principal_arn     = "arn:aws:iam::521614675974:role/tfstacks-role"
+      
+      
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
     }
   }
   
