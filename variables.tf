@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "eks_cluster_name" {
   description = "EKS cluster name"
   type        = string
-  default     = "vault-demo-cluster"
+  default     = "djoo-dev-eks"
 }
 
 variable "instance_type" {
