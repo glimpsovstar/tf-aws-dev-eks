@@ -66,33 +66,3 @@ variable "environment" {
   default     = "dev"
 }
 
-# Add-on installation variables
-variable "install_nginx_ingress" {
-  description = "Whether to install NGINX Ingress Controller"
-  type        = bool
-  default     = false
-}
-
-variable "install_cert_manager" {
-  description = "Whether to install cert-manager"
-  type        = bool
-  default     = false
-}
-
-variable "vault_domain_name" {
-  description = "Domain name for Vault ingress"
-  type        = string
-  default     = ""
-}
-
-variable "letsencrypt_email" {
-  description = "Email address for Let's Encrypt certificates"
-  type        = string
-  default     = ""
-}
-
-variable "create_vault_storage" {
-  description = "Whether to create Vault storage class"
-  type        = bool
-  default     = false
-}
