@@ -78,3 +78,21 @@ variable "install_cert_manager" {
   type        = bool
   default     = false
 }
+
+variable "vault_domain_name" {
+  description = "Domain name for Vault ingress"
+  type        = string
+  default     = ""
+}
+
+variable "letsencrypt_email" {
+  description = "Email address for Let's Encrypt certificates"
+  type        = string
+  default     = ""
+}
+
+variable "create_vault_storage" {
+  description = "Whether to create Vault storage class"
+  type        = bool
+  default     = false
+}

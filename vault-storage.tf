@@ -1,5 +1,16 @@
+# Variable to control vault storage class creation
+variable "create_vault_storage" {
+  description = "Whether to create Vault storage class"
+  type        = bool
+  default     = false
+}
+
 # Storage class for Vault persistent volumes
+# Note: This requires Kubernetes provider to be configured after EKS cluster is ready
+# Set create_vault_storage = true only after EKS cluster is fully deployed
 resource "kubernetes_storage_class" "vault" {
+  count = var.create_vault_storage ? 1 : 0
+  
   metadata {
     name = "vault-storage"
   }
@@ -13,8 +24,5 @@ resource "kubernetes_storage_class" "vault" {
     encrypted = "true"
   }
   
-  depends_on = [
-    module.eks,
-    module.eks.cluster_addons  # Wait for EBS CSI driver to be ready
-  ]
+  depends_on = [module.eks]
 }
