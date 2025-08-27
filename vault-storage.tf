@@ -13,5 +13,8 @@ resource "kubernetes_storage_class" "vault" {
     encrypted = "true"
   }
   
-  depends_on = [module.eks]  # Ensure EKS cluster is created first
+  depends_on = [
+    module.eks,
+    module.eks.cluster_addons  # Wait for EBS CSI driver to be ready
+  ]
 }

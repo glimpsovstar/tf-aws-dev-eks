@@ -65,3 +65,16 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+# Add-on installation variables
+variable "install_nginx_ingress" {
+  description = "Whether to install NGINX Ingress Controller"
+  type        = bool
+  default     = false
+}
+
+variable "install_cert_manager" {
+  description = "Whether to install cert-manager"
+  type        = bool
+  default     = false
+}
